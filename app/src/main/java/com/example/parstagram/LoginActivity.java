@@ -54,11 +54,10 @@ public class LoginActivity extends AppCompatActivity {
         btSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "Signup button clicked");
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
-
-
+                Log.i(TAG, "Signup button clicked, navigating to sign up activity");
+                // navigate to signup activity
+                Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(i);
 
             }
         });
