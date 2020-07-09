@@ -3,6 +3,7 @@ package com.example.parstagram;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvPosts;
     PostsAdapter adapter;
     List<Post> allPosts;
+    SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,17 @@ public class MainActivity extends AppCompatActivity {
         //initialize array that will hold all posts and create posts adapter
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(this, allPosts);
+
+        // Lookup the swipe container view
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "refreshing posts...");
+                queryPosts();
+            }
+        });
 
         btLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +84,14 @@ public class MainActivity extends AppCompatActivity {
         rvPosts.setLayoutManager(new LinearLayoutManager(this));
 
         queryPosts();
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
+
 
     private void queryPosts() {
         // Specify which class to query
@@ -91,14 +111,19 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "issue with retrieving posts", e);
                     return;
                 }
+                // clear old posts from adapter
+                adapter.clear();
+
                 // iterate through all posts to ensure they are being retrieved
                 for(Post post: posts) {
                     Log.i(TAG, "Post: " + post.getDescription() + ", User: " + post.getUser().getUsername());
                 }
 
-                // save retrieved posts and notify adapter posts have changed
-                allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
+                // save retrieved posts and add to adapter
+                adapter.addAll(posts);
+
+                // stop refreshing if querying posts on a refresh
+                swipeContainer.setRefreshing(false);
             }
         });
     }

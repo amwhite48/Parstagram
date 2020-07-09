@@ -44,6 +44,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         return posts.size();
     }
 
+    // clear items from recyclerview (for swipe refresh layout)
+    public void clear() {
+        posts.clear();
+        this.notifyDataSetChanged();
+    }
+
+    public void addAll(List<Post> newPosts) {
+        posts.addAll(newPosts);
+        this.notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvUsername;
