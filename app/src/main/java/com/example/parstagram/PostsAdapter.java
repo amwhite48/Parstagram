@@ -1,6 +1,7 @@
 package com.example.parstagram;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.parse.ParseFile;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -55,7 +58,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         this.notifyDataSetChanged();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView tvUsername;
         private ImageView ivImage;
@@ -66,6 +69,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Post post) {
@@ -76,6 +81,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if(image != null) {
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             }
+        }
+
+        @Override
+        // when clicked, navigate to post details activity
+        public void onClick(View view) {
+            // get item position to navigate to
+            int position = getAdapterPosition();
+            // make sure position is in view
+            if(position != RecyclerView.NO_POSITION) {
+                Post post = posts.get(position);
+                // make intent for new activity
+                Intent intent = new Intent(context, DetailsActivity.class);
+                // serialize details to send to new activity and start activity
+                intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
+                context.startActivity(intent);
+            }
+
         }
     }
 }
