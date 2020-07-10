@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/ic_launcher_background" >
+        android:background="@color/ic_launcher_background"
+        android:id="@+id/container"
+        android:layout_above="@id/bottom_navigation">
 
         <ImageView
             android:id="@+id/ivLogo"
@@ -38,6 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:backgroundTint="#FFFFFF"
-        app:menu="@menu/menu_bottom_navigation" />
+        app:menu="@menu/menu_bottom_navigation"
+        app:labelVisibilityMode="unlabeled"/>
 
 </RelativeLayout>
