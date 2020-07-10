@@ -29,8 +29,6 @@ public class Post extends ParseObject {
         put(KEY_DESCRIPTION, description);
     }
 
-    public Date getCreatedAt() { return getDate(KEY_CREATED_AT); }
-
     public ParseFile getImage() {
         return getParseFile(KEY_IMAGE);
     }

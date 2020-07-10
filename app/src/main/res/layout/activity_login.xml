@@ -9,12 +9,21 @@
     android:orientation="vertical"
     tools:context=".LoginActivity">
 
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="image"
+        android:maxHeight="55dp"
+        android:layout_marginTop="150dp"
+        app:srcCompat="@drawable/nav_logo_whiteout" />
+
 
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
         android:hint="@string/username" />
 
         <EditText
@@ -24,15 +33,19 @@
             android:hint="@string/password"
             android:inputType="textPassword" />
 
-        <Button
-            android:id="@+id/btLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login" />
+    <Button
+        android:id="@+id/btLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#469CE1"
+        android:text="@string/login"
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/btSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/sign_up" />
+        android:backgroundTint="#FFFFFF"
+        android:text="@string/sign_up"
+        android:textColor="#469CE1" />
 </LinearLayout>

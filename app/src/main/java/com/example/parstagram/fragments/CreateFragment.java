@@ -1,23 +1,31 @@
-package com.example.parstagram;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+package com.example.parstagram.fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.parstagram.BitmapScaler;
+import com.example.parstagram.Post;
+import com.example.parstagram.PostActivity;
+import com.example.parstagram.R;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -28,9 +36,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class PostActivity extends AppCompatActivity {
+import static android.app.Activity.RESULT_OK;
 
-    public static final String TAG = "PostActivity";
+
+public class CreateFragment extends Fragment {
+
+    public static final String TAG = "PostFragment";
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 48;
     public static final int MAX_WIDTH = 800;
     Button btTakePicture;
@@ -40,28 +51,41 @@ public class PostActivity extends AppCompatActivity {
     private File photoFile;
     public String photoFileName = "photo.jpg";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
 
-        // find views
-        btTakePicture = findViewById(R.id.btTakePicture);
-        btPost = findViewById(R.id.btPost);
-        ivToPost = findViewById(R.id.ivToPost);
-        etDescription = findViewById(R.id.etDescription);
+    public CreateFragment() {
+        // Required empty public constructor
+    }
+
+    // The onCreateView method is called when Fragment should create its View object hierarchy
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_create, container, false);
+    }
+
+    // This event is triggered soon after onCreateView().
+    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Setup any handles to view objects here
+        btTakePicture = view.findViewById(R.id.btTakePicture);
+        btPost = view.findViewById(R.id.btPost);
+        ivToPost = view.findViewById(R.id.ivToPost);
+        etDescription = view.findViewById(R.id.etDescription);
 
         btPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String description = etDescription.getText().toString();
                 if(description.isEmpty()) {
-                    Toast.makeText(PostActivity.this, "Caption cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Caption cannot be empty", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // if no photo, don't post
                 if(photoFile == null || ivToPost.getDrawable() == null){
-                    Toast.makeText(PostActivity.this, "Error: no picture attached", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error: no picture attached", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 //if post is valid, get user and create in Parse
@@ -88,12 +112,12 @@ public class PostActivity extends AppCompatActivity {
 
         // wrap photo File into a content provider to make sure image is stored properly
         // required for API >= 24
-        Uri fileProvider = FileProvider.getUriForFile(PostActivity.this, "com.codepath.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
         // tell application where you want output
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         // checks if phone has camera
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             // start the image capture intent to take photo
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         }
@@ -101,7 +125,7 @@ public class PostActivity extends AppCompatActivity {
 
     // return to post activity after taking a picture
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -117,7 +141,7 @@ public class PostActivity extends AppCompatActivity {
                 }
 
             } else { // Result was a failure
-                Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -150,7 +174,7 @@ public class PostActivity extends AppCompatActivity {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
@@ -176,7 +200,7 @@ public class PostActivity extends AppCompatActivity {
                 if(e != null) {
                     // if an exception was thrown, there was an error
                     Log.e(TAG, "Error while saving post", e);
-                    Toast.makeText(PostActivity.this, "Error saving post", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error saving post", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

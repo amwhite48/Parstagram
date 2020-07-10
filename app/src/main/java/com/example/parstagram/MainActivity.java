@@ -1,6 +1,9 @@
 package com.example.parstagram;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -8,10 +11,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
 
+import com.example.parstagram.fragments.CreateFragment;
+import com.example.parstagram.fragments.PostsFragment;
+import com.example.parstagram.fragments.ProfileFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -23,108 +31,45 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
-    Button btLogout;
-    Button btPost;
-    RecyclerView rvPosts;
-    PostsAdapter adapter;
-    List<Post> allPosts;
-    SwipeRefreshLayout swipeContainer;
+
+
+    private BottomNavigationView bottomNavigationView;
+    final FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btLogout = findViewById(R.id.btLogout);
-        btPost = findViewById(R.id.btPost);
-        rvPosts = findViewById(R.id.rvPosts);
 
-        //initialize array that will hold all posts and create posts adapter
-        allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(this, allPosts);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Lookup the swipe container view
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onRefresh() {
-                Log.i(TAG, "refreshing posts...");
-                queryPosts();
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                Fragment fragment;
+                switch (menuItem.getItemId()) {
+                    case R.id.action_home:
+                        fragment = new PostsFragment();
+                        break;
+                    case R.id.action_create:
+                        fragment = new CreateFragment();
+                        break;
+                    case R.id.action_profile:
+                    default:
+                        fragment = new ProfileFragment();
+                        break;
+                }
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                return true;
             }
         });
 
-        btLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // logs out user and navigates to login activity
-                ParseUser.logOut();
-                ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+        // Set default selection
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
 
-                Intent i = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
 
-        btPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // navigates to create post activity
-                Intent i = new Intent(MainActivity.this, PostActivity.class);
-                startActivity(i);
-
-            }
-        });
-
-        // set up recyclerview and retrieve posts
-        // set adapter on recyclerview
-        rvPosts.setAdapter(adapter);
-        //set layout manager
-        rvPosts.setLayoutManager(new LinearLayoutManager(this));
-
-        queryPosts();
-
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
     }
 
 
-    private void queryPosts() {
-        // Specify which class to query
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        // include user in query
-        query.include(Post.KEY_USER);
-        // set query limit to 20 posts per query
-        query.setLimit(20);
-        // order posts by newest posts first
-        query.addDescendingOrder(Post.KEY_CREATED_AT);
-        // find all posts asynchronously
-        query.findInBackground(new FindCallback<Post>() {
-            @Override
-            public void done(List<Post> posts, ParseException e) {
-                // if there are any errors, return
-                if(e != null) {
-                    Log.e(TAG, "issue with retrieving posts", e);
-                    return;
-                }
-                // clear old posts from adapter
-                adapter.clear();
-
-                // iterate through all posts to ensure they are being retrieved
-                for(Post post: posts) {
-                    Log.i(TAG, "Post: " + post.getDescription() + ", User: " + post.getUser().getUsername());
-                }
-
-                // save retrieved posts and add to adapter
-                adapter.addAll(posts);
-
-                // stop refreshing if querying posts on a refresh
-                swipeContainer.setRefreshing(false);
-            }
-        });
-    }
 }

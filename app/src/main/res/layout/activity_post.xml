@@ -8,32 +8,5 @@
     android:orientation="vertical"
     tools:context=".PostActivity">
 
-    <ImageView
-        android:id="@+id/ivToPost"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/btTakePicture"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="take picture" />
-
-    <EditText
-        android:id="@+id/etDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Post caption"
-        android:inputType="textPersonName"
-        android:lines="6"
-        android:maxLines="6"
-        android:singleLine="false" />
-
-    <Button
-        android:id="@+id/btPost"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="post" />
 </LinearLayout>
