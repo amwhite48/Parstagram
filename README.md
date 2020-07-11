@@ -39,6 +39,8 @@ The following **stretch** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 <img src='https://github.com/amwhite48/Parstagram/blob/master/Walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/amwhite48/Parstagram/blob/master/Walkthrough2.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
